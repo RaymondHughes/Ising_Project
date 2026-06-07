@@ -20,7 +20,7 @@ class IsingEnsemble:
 
 		self.ensemble = np.random.choice(spin_choice, (n, shape[0], shape[1]))
 
-	def delta_energy(self, p_inds):
+	def _delta_energy(self, p_inds):
 		"""
 		Returns the change in energy as an array of length n if the spin at p_ind were to be flipped
 		"""
@@ -63,7 +63,7 @@ class IsingEnsemble:
 		for i in range(num):
 			for i in range(steps):
 				p_inds = (np.random.randint(low = 0, high = self.shape[0]), np.random.randint(low = 0, high = self.shape[1]))
-				dE = self.delta_energy(p_inds)
+				dE = self._delta_energy(p_inds)
 				a = self._acceptance(dE)
 				self.ensemble[a, p_inds[0], p_inds[1]] *= -1
 			

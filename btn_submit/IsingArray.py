@@ -10,7 +10,7 @@ import matplotlib.animation as animation
 spin_choice = np.array([-1, 1])
 
 class IsingArray:
-	def __init__(self, shape, T=2.2, J = 1, kb = 1):
+	def __init__(self, shape, T=2.2, J = 1., kb = 1.):
 		# Physical parameters
 		self.kbT = T*kb
 		self.J = J
@@ -32,7 +32,7 @@ class IsingArray:
 		description = f"Ising Array of size {shape} with average energy density {self.get_energy} and magnetization {self.get_mag}"
 		return description
 
-	def delta_energy(self, p_inds):
+	def _delta_energy(self, p_inds):
 		"""
 		Returns the change in energy if the spin at p_ind were flipped
 		"""
@@ -62,20 +62,20 @@ class IsingArray:
 		"""
 		return abs(np.mean(self.spins))
 
-	def get_acceptance_rate(self):
+	def _get_acceptance_rate(self):
 		return (self.accepted)/(self.accepted + self.rejected)
 
 	
 
-	def sweep(self, iternum = 1):
+	def sweep(self, num = 1):
 		"""
 		sweeps the array for one round of thermal fluctuations
 		"""
 		steps = int(self.shape[0]*self.shape[1])
-		for i_sweep in range(int(iternum)):
+		for i_sweep in range(int(num)):
 			for i in range(steps):
 				p_inds = (np.random.randint(low = 0, high = self.shape[0]), np.random.randint(low = 0, high = self.shape[1]))
-				dE = self.delta_energy(p_inds)
+				dE = self._delta_energy(p_inds)
 				if self._acceptance(dE):
 					self.spins[p_inds[0], p_inds[1]] *= -1
 					self.accepted += 1
@@ -88,7 +88,7 @@ class IsingArray:
 
 		return None
 
-	def animate(self, f = None, inter = 50, rep = True, show = True, frames = 100):
+	def animate(self, f = None, inter = 50, loop = True, show = True, frames = 100):
 		"""
 		produces an animation of the array's thermal fluctuations
 
@@ -98,10 +98,10 @@ class IsingArray:
 		if f == None:
 			f, ax = plt.subplots(figsize = (10, 6))
 		else:
-			ax = plt.axes(f)
+			ax = plt.axes(figure = f)
 
 		self.im = ax.imshow(self.spins, aspect = 'auto')
-		ani = animation.FuncAnimation(f, self._update, interval=inter, blit=True, repeat = rep, frames = frames)
+		ani = animation.FuncAnimation(f, self._update, interval=inter, blit=True, repeat = loop, frames = frames)
 
 		
 		if show:
